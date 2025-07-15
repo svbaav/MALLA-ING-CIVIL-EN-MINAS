@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Interactiva</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    .semestre {
+      border: 2px solid #999;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      background-color: white;
+    }
+
+    .semestre h2 {
+      margin-top: 0;
+    }
+
+    .ramo {
+      display: inline-block;
+      background-color: #ffeb3b; /* amarillo */
+      padding: 10px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      min-width: 120px;
+      user-select: none;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    .aprobado {
+      background-color: #2196f3; /* azul */
+      text-decoration: line-through;
+      color: white;
+    }
+
+    .bloqueado {
+      background-color: #ccc;
+      color: #666;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Malla Interactiva</h1>
+
+  <div class="semestre" id="semestre1">
+    <h2>1° Semestre</h2>
+    <div class="ramo" data-id="mat1">Matemática I</div>
+    <div class="ramo" data-id="fis1">Física I</div>
+  </div>
+
+  <div class="semestre" id="semestre2">
+    <h2>2° Semestre</h2>
+    <div class="ramo" data-id="mat2" data-prer="mat1">Matemática II</div>
+    <div class="ramo" data-id="fis2" data-prer="fis1">Física II</div>
+  </div>
+
+  <script>
+    const ramos = document.querySelectorAll(".ramo");
+
+    function cargarEstado() {
+      ramos.forEach(ramo => {
+        const id = ramo.dataset.id;
+        const estado = localStorage.getItem(id);
+        if (estado === "aprobado") {
+          ramo.classList.add("aprobado");
+        }
+      });
+    }
+
+    function actualizarBloqueados() {
+      ramos.forEach(ramo => {
+        const prer = ramo.dataset.prer;
+        const id = ramo.dataset.id;
+
+        if (prer && !localStorage.getItem(prer)) {
+          ramo.classList.add("bloqueado");
+        } else {
+          ramo.classList.remove("bloqueado");
+        }
+      });
+    }
+
+    function toggleRamo(ramo) {
+      if (ramo.classList.contains("bloqueado")) return;
+
+      const id = ramo.dataset.id;
+
+      if (ramo.classList.contains("aprobado")) {
+        ramo.classList.remove("aprobado");
+        localStorage.removeItem(id);
+      } else {
+        ramo.classList.add("aprobado");
+        localStorage.setItem(id, "aprobado");
+      }
+
+      actualizarBloqueados();
+    }
+
+    ramos.forEach(ramo => {
+      ramo.addEventListener("click", () => toggleRamo(ramo));
+    });
+
+    cargarEstado();
+    actualizarBloqueados();
+  </script>
+</body>
+</html>
 
